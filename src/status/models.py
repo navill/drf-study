@@ -1,11 +1,9 @@
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
-
 
 
 def upload_status_image(instance, filename):
-    return f'updates/{instance.user}/{filename}'
+    return f'status/{instance.user}/{filename}'
 
 
 class StatusQuerySet(models.QuerySet):
@@ -25,7 +23,7 @@ class Status(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     # objects = StatusManager()
- 
+
     def __str__(self):
         return str(self.content)[:50]
 

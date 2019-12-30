@@ -19,10 +19,12 @@ class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
         fields = [
+            'id',
             'user',
             'content',
             'image',
         ]
+        read_only_fields = ['user']
 
     """
     def validate_<fieldname>(self, value):
