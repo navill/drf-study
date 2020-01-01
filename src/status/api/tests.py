@@ -9,13 +9,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse as api_reverse
 from rest_framework.test import APITestCase
 from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handler
+
 # from rest_framework_jwt.settings import api_settings
 # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 from status.models import Status
-
-# Create your tests here.
-
 
 User = get_user_model()
 
@@ -26,12 +24,13 @@ class StatusTestCase(APITestCase):
         user = User.objects.create(username='testuser', email='jihoon1492@gmail.com')
         user.set_password('test1234')
         user.save()
-        status_obj = Status.objects.create(user=user, content='hello there!')
+        Status.objects.create(user=user, content='hello!')
         # print(status_obj)
 
     def test_statuses(self):
         self.assertEqual(Status.objects.count(), 1)
 
+    # acquire token
     def status_user_token(self):
         auth_url = api_reverse('api-auth:login')
         auth_data = {
@@ -158,7 +157,7 @@ class StatusTestCase(APITestCase):
     def test_status_without_token_create(self):
         url = api_reverse('api-status:list')
         data = {
-            'content': 'come cool test content without token'
+            'content': 'some cool test content without token'
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -168,7 +167,9 @@ class StatusTestCase(APITestCase):
         data_id = data.get('id')
         user = User.objects.create(username='othertestuser')
         payload = jwt_payload_handler(user)
+        print(payload)
         token = jwt_encode_handler(payload)
+        print(token)
         self.client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
         rud_url = api_reverse('api-status:detail', kwargs={'id': data_id})
         rud_data = {
