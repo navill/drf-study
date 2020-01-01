@@ -3,35 +3,92 @@ import os
 
 import requests
 
-ENDPOINT = 'http://127.0.0.1:8000/api/status/'
-
 image_path = os.path.join(os.getcwd(), "python.png")
-
-AUTH_ENDPOINT = 'http://127.0.0.1:8000/api/auth/jwt/'
-REFRESH_ENDPOINT = AUTH_ENDPOINT + 'refresh/'
+AUTH_ENDPOINT = 'http://127.0.0.1:8000/api/auth/'
+# REFRESH_ENDPOINT = AUTH_ENDPOINT + 'refresh/'
 headers = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
 }
 data = {
     'username': 'jh',
-    'password': '123'
+    'password': '123',
 }
 
 r = requests.post(AUTH_ENDPOINT, data=json.dumps(data), headers=headers)
 token = r.json()['token']
+print(token)
 
+ENDPOINT = 'http://127.0.0.1:8000/api/status/24/'
+headers2 = {
+    # 'Content-Type': 'application/json',
+    'Authorization': 'JWT ' + token,
+}
+data2 = {
+    'content': 'this new content post'
+}
+with open(image_path, 'rb') as image:
+    file_data = {
+        'image': image
+    }
+    r = requests.put(ENDPOINT, data=data2, headers=headers2, files=file_data)
+    print(r.text)
+
+# ENDPOINT = 'http://127.0.0.1:8000/api/status/'
+# image_path = os.path.join(os.getcwd(), "python.png")
+# AUTH_ENDPOINT = 'http://127.0.0.1:8000/api/auth/register/'
+# # REFRESH_ENDPOINT = AUTH_ENDPOINT + 'refresh/'
+# headers = {
+#     'Content-Type': 'application/json',
+#     'Authorization': 'JWT ' + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxOSwidXNlcm5hbWUiOiJjZmUxOCIsImV4cCI6MTU3Nzc0OTgwNCwiZW1haWwiOiJjZmUxOEBjZmUuY29tIiwib3JpZ19pYXQiOjE1Nzc3NDk1MDR9.kGQKANx5vK2EPJRi1EW0hyAVTGR6qfdh9XdWvHbJiIs',
+# }
+# data = {
+#     'username': 'cfe19',
+#     'email': 'cfe19@cfe.com',
+#     'password': '123',
+#     'password2': '123'
+# }
+#
+# r = requests.post(AUTH_ENDPOINT, data=json.dumps(data), headers=headers)
+# token = r.json()  # ['token']
 # print(token)
 
-refresh_data = {
-    'token': token
-}
-new_response = requests.post(REFRESH_ENDPOINT, data=json.dumps(refresh_data), headers=headers)
-new_token = new_response.json()
-print(new_token)
-
-# get_endpoint = ENDPOINT + str(20)
-# post_data = json.dumps({'content': 'some random content'})
 #
+# refresh_data = {
+#     'token': token
+# }
+# new_response = requests.post(REFRESH_ENDPOINT, data=json.dumps(refresh_data), headers=headers)
+# new_token = new_response.json()
+# print(new_token)
+
+# # image update(put)
+# headers = {
+#     # 파일 업로드 시 Content-Type 생략
+#     # 'Content-Type': 'application/json',
+#     'Authorization': 'JWT ' + token,
+# }
+# with open(image_path, 'rb') as image:
+#     file_data = {
+#         'image': image
+#     }
+#     data = {
+#         'content': 'update contents'
+#     }
+#     # json_data = json.dumps(data)
+#     posted_response = requests.put(ENDPOINT + str(32) + '/', data=data, headers=headers, files=file_data)
+#     print(posted_response.text)
+#
+# # content update(put)
+# headers = {
+#     'Content-Type': 'application/json',
+#     'Authorization': 'JWT ' + token,
+# }
+# data = {
+#     'content': 'update contents'
+# }
+# json_data = json.dumps(data)
+# posted_response = requests.put(ENDPOINT + str(32) + '/', data=json_data, headers=headers)
+# print(posted_response.text)
+
 # r = requests.get(get_endpoint)
 # print(r.text)
 #

@@ -2,8 +2,8 @@
 import json
 
 from rest_framework import generics, mixins, permissions
-from rest_framework.authentication import SessionAuthentication
 
+from accounts.api.permissions import IsOwnerOrReadOnly
 from status.api.serializers import StatusSerializer
 from status.models import Status
 
@@ -21,7 +21,7 @@ def is_json(json_data):
 
 
 class StatusDetailAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = StatusSerializer
     queryset = Status.objects.all()
     lookup_field = 'id'
@@ -36,9 +36,7 @@ class StatusDetailAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, gen
         return self.destroy(request, *args, **kwargs)
 
 
-class StatusAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView):
+class StatusAPIView(mixins.CreateModelMixin, generics.ListAPIView):
     # 허가(permission)에 따라 어떻게 동작할 것인가?
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # 어떻게 인증을 할 것인지??
@@ -46,20 +44,24 @@ class StatusAPIView(
     # queryset = Status.objects.all()
     serializer_class = StatusSerializer
     passed_id = None
+    search_fields = ('user__username', 'content')
+    ordering_fields = ('user__username', 'timestamp')
+    queryset = Status.objects.all()
 
-    # get-> retrieve -> get_object -> get_queryset
-    def get_queryset(self):
-        request = self.request
-        qs = Status.objects.all()
-        query = request.GET.get('q')
-        if query is not None:
-            qs = qs.filter(content__icontains=query)
-        return qs
+    # # get-> retrieve -> get_object -> get_queryset
+    # def get_queryset(self):
+    #     request = self.request
+    #     qs = Status.objects.all()
+    #     query = request.GET.get('q')
+    #     if query is not None:
+    #         qs = qs.filter(content__icontains=query)
+    #     return qs
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
+        # 현재 유저를 post의 user로 등록하기 위해 serializer에 전달
         serializer.save(user=self.request.user)
 
 # class StatusAPIView(
