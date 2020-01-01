@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse as api_reverse
 
 from status.api.serializers import StatusInlineUserSerializer
+from status.models import Status
 
 User = get_user_model()
 
@@ -10,7 +11,16 @@ User = get_user_model()
 class UserDetailSerializer(serializers.ModelSerializer):
     uri = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
-
+    # 사용자가 작성한 post list의 url을 출력
+    # statuses = serializers.HyperlinkedRelatedField(
+    #     source='status_set',  # Status.objects.filter(user=user)
+    #     many=True,
+    #     read_only=True,
+    #     lookup_field='id',
+    #     view_name='api-status:detail'
+    # )
+    # 사용자가 작성한 post list 출력
+    # statuses = StatusInlineUserSerializer(source='status_set', many=True, read_only=True)
     # status_uri = serializers.SerializerMethodField(read_only=True)
     # recent_status = serializers.SerializerMethodField(read_only=True)
 

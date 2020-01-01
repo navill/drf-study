@@ -21,15 +21,22 @@ class StatusSerializer(serializers.ModelSerializer):
     uri = serializers.SerializerMethodField(read_only=True)
     user = UserPublicSerializer(read_only=True)
     # user = serializers.SerializerMethodField(read_only=True)
+    # user_id = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
+    user_url = serializers.HyperlinkedRelatedField(lookup_field='username', view_name='api-user:detail', source='user',
+                                                   read_only=True)
+    # user_email = serializers.SlugRelatedField(read_only=True, source='user', slug_field='email')
 
     class Meta:
         model = Status
         fields = [
             'uri',
             'id',
+            'user_url',
+            # 'user_email',
             'user',
             'content',
             'image',
+
         ]
         read_only_fields = ['user']
 

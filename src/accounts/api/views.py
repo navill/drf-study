@@ -17,7 +17,6 @@ User = get_user_model()
 
 
 class AuthAPIView(APIView):
-    authentication_classes = []
     permission_classes = [ANonPermissionOnly]
 
     def post(self, request, *args, **kwargs):
@@ -34,7 +33,7 @@ class AuthAPIView(APIView):
             if user_obj.check_password(password):
                 user = user_obj
                 # 인증 된 시점 - jh
-                print(user)
+                # print(user)
                 payload = jwt_payload_handler(user)
                 token = jwt_encode_handler(payload)
                 response = jwt_response_payload_handler(token, user, request=request)
